@@ -4,20 +4,14 @@ const User = require("./models/user");
 
 const app = express();
 
-app.post("/signup", async (req, res) => {
-  const dummyObj = {
-    firstName: "chandu",
-    lastName: "akula",
-    emailId: "chandu@mail.com",
-    password: "66666",
-    age: 21,
-    gender: "male",
-  };
+app.use(express.json());
 
-  const user = new User(dummyObj); // creating instance of user model
+app.post("/signup", async (req, res) => {
+  const user = new User(req.body); // creating new instance of user model
   await user.save();
   //console.log("user of dummy added");
   res.send("dummy used added");
+  // console.log(req.body);
 });
 
 connectDB()
