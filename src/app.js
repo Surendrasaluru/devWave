@@ -14,6 +14,31 @@ app.post("/signup", async (req, res) => {
   // console.log(req.body);
 });
 
+//finding a user by mail
+
+app.get("/finduser", async (req, res) => {
+  const userMail = req.body.emailId; //assigning mail to a varble
+  try {
+    const user = await User.find({ emailId: userMail }); //finding him
+    if (user.length === 0) {
+      res.send("sorry not found"); //if not found that array lenghtis 0
+    } else {
+      res.send(user); // if found return him
+    }
+  } catch (err) {
+    res.send("somethig went wrong in finding user");
+  }
+});
+//feed api
+app.get("/feed", async (req, res) => {
+  try {
+    const user = await User.find({}); //empty filter returns everything
+    res.send(user);
+  } catch {
+    res.status(400).send("something went wrong in getting feed");
+  }
+});
+
 connectDB()
   .then(() => {
     console.log("established successfully");
