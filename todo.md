@@ -5,3 +5,4 @@
 - express.json( middleware)
 - model methods
 - find and findOne
+- diff btwn patch and update
