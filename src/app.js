@@ -59,7 +59,9 @@ app.patch("/updateuser", async (req, res) => {
   const userId = req.body._id; //_id assigned by official mongodb
   const data = req.body;
   try {
-    const user = await User.findByIdAndUpdate({ _id: userId }, data);
+    const user = await User.findByIdAndUpdate({ _id: userId }, data, {
+      runValidators: true,
+    });
     res.send("user updated succesfully!");
   } catch (err) {
     res.send("something went wrong in updating");
