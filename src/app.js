@@ -55,16 +55,25 @@ app.delete("/deleteuser", async (req, res) => {
 });
 
 //updating a user
-app.patch("/updateuser", async (req, res) => {
-  const userId = req.body._id; //_id assigned by official mongodb
+app.patch("/updateuser/:_id", async (req, res) => {
+  const userId = req.params?._id; //_id assigned by official mongodb
   const data = req.body;
+
   try {
+    const ALLOWED_UPDATES = ["age", "skills", "photoUrl", "about"];
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error("you cant udpate those fields");
+    }
     const user = await User.findByIdAndUpdate({ _id: userId }, data, {
       runValidators: true,
     });
     res.send("user updated succesfully!");
   } catch (err) {
     res.send("something went wrong in updating");
+    res.send(err.message);
   }
 });
 
