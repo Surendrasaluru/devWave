@@ -7,10 +7,15 @@ const app = express();
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body); // creating new instance of user model
-  await user.save();
-  //console.log("user of dummy added");
-  res.send("dummy used added");
+  try {
+    const user = new User(req.body); // creating new instance of user model
+    await user.save();
+    //console.log("user of dummy added");
+    res.send("dummy used added");
+  } catch (error) {
+    res.send("postfailed" + error);
+  }
+
   // console.log(req.body);
 });
 
@@ -18,14 +23,14 @@ app.post("/signup", async (req, res) => {
 app.get("/finduser", async (req, res) => {
   const userMail = req.body.emailId; //assigning mail to a varble
   try {
-    const user = await User.findOne(userMail); //finding him
-    if (user.length === 0) {
+    const user = await User.findOne({ emailId: userMail }); //finding him
+    if (user & (user.length === 0)) {
       res.send("sorry not found"); //if not found that array lenghtis 0
     } else {
       res.send(user); // if found return him
     }
   } catch (err) {
-    res.send("something went wrong in finding user");
+    res.send("something went wrong in finding user" + err.message);
   }
 });
 
@@ -67,6 +72,7 @@ app.patch("/updateuser/:_id", async (req, res) => {
     if (!isUpdateAllowed) {
       throw new Error("you cant udpate those fields");
     }
+
     const user = await User.findByIdAndUpdate({ _id: userId }, data, {
       runValidators: true,
     });

@@ -1,6 +1,8 @@
 //we will define wat an user model and how it looks
 const mongoose = require("mongoose");
 
+const validator = require("validator");
+
 const userSchema = mongoose.Schema(
   {
     // creation of schema for model
@@ -26,10 +28,15 @@ const userSchema = mongoose.Schema(
     },
     emailId: {
       type: String,
+      lowercase: true,
       required: true,
       unique: true,
-      lowercase: true,
       trim: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Invalid email address: " + value);
+        }
+      },
     },
     password: {
       type: String,
@@ -43,13 +50,18 @@ const userSchema = mongoose.Schema(
       type: String,
       default:
         "https://img.freepik.com/free-vector/hand-drawn-programmer-work_52683-17782.jpg?uid=R134257556&ga=GA1.1.752565634.1729341420&semt=ais_hybrid",
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error("Invalid url address: " + value);
+        }
+      },
     },
     about: {
       type: String,
     },
     skills: {
       type: [String],
-      unique: true,
+      unique: false,
     },
   },
   { timestamps: true }
