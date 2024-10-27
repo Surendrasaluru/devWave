@@ -3,11 +3,13 @@ const connectDB = require("./config/database");
 const User = require("./models/user");
 const { validateSignupData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const validator = require("validator");
 
 const app = express();
 
 app.use(express.json());
 
+//signupapi
 app.post("/signup", async (req, res) => {
   try {
     //validating req data before adding it to DB
@@ -15,7 +17,7 @@ app.post("/signup", async (req, res) => {
 
     const { firstName, lastName, emailId, password } = req.body;
     const passwordHash = await bcrypt.hash(password, 10);
-    console.log(passwordHash);
+    //console.log(passwordHash);
 
     const user = new User({
       firstName,
@@ -31,6 +33,31 @@ app.post("/signup", async (req, res) => {
   }
 
   // console.log(req.body);
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    if (!validator.isEmail(emailId)) {
+      throw new Error("Invalid Credetials");
+    }
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error("u are not a signed user");
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password); //returns true or false
+
+    if (isPasswordValid) {
+      res.send("user loggedin succesfully");
+    } else {
+      throw new Error("login failed");
+    }
+
+    //console.log(isPasswordValid);
+  } catch (error) {
+    res.send("ERROR : " + error.message);
+  }
 });
 
 //finding a user by mail
