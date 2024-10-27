@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt"); //hashing
 const validator = require("validator"); //validtg
 const cookieParser = require("cookie-parser"); //reading cookies
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 
 const app = express();
 
@@ -40,22 +41,21 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
-    const { emailId, password } = req.body;
+    const { emailId, password } = req.body; //extracting data from login fields
     if (!validator.isEmail(emailId)) {
-      throw new Error("Invalid Credetials");
+      throw new Error("Invalid Credetials"); //checking email validity
     }
-    const user = await User.findOne({ emailId: emailId });
+    const user = await User.findOne({ emailId: emailId }); //finding whether user woith given email exists or not
     if (!user) {
       throw new Error("u are not a signed user");
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password); //returns true or false
+    const isPasswordValid = await bcrypt.compare(password, user.password); //returns true or false(checking paswd)
 
     if (isPasswordValid) {
-      const token = await jwt.sign({ _id: user._id }, "surendrad2731");
-      console.log({ token: token });
+      const token = await user.getJWT();
 
-      res.cookie("token", token); //sending a dummy cookie
+      res.cookie("token", token); //storing token in cookie
       res.send("user loggedin succesfully");
     } else {
       throw new Error("login failed");
@@ -67,28 +67,24 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-
-    if (!token) {
-      res.send("Invalid token");
-    }
-    const decodedMessage = await jwt.verify(token, "surendrad2731"); //for verfyng
-    const { _id } = decodedMessage;
-    const user = await User.findOne({ _id });
-
-    if (user) {
-      res.send(user);
-    } else {
-      res.send("login first");
-    }
+    const user = req.user;
+    res.send(user);
   } catch (error) {
     throw new Error(error.message);
   }
 
   //console.log(cookies);
+});
+
+app.post("/sendconnectionrequest", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    res.send(user.firstName + "😍 is sending a request to you");
+  } catch (error) {
+    throw new Error(error.message);
+  }
 });
 
 //finding a user by mail

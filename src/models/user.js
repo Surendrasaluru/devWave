@@ -1,6 +1,6 @@
 //we will define wat an user model and how it looks
 const mongoose = require("mongoose");
-
+const jwt = require("jsonwebtoken");
 const validator = require("validator");
 
 const userSchema = mongoose.Schema(
@@ -66,6 +66,13 @@ const userSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.methods.getJWT = async function () {
+  const user = this;
+  const token = await jwt.sign({ _id: user._id }, "surendrad2731", {
+    expiresIn: "1d",
+  }); //jwt token creating with secretkey and hidden info
+  return token;
+};
 const User = mongoose.model("User", userSchema); // creating model with name Usermodel
 //console.log(User.inspect());
 
