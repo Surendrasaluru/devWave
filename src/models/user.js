@@ -11,11 +11,14 @@ const userSchema = mongoose.Schema(
       required: true, //check
       uppercase: true, //always convert into lower case
       minLength: 4,
+      maxLength: 30,
     },
     lastName: {
       type: String,
       uppercase: true,
+      required: true,
       minLength: 4,
+      maxLength: 30,
     },
     gender: {
       type: String,
@@ -59,14 +62,11 @@ const userSchema = mongoose.Schema(
     about: {
       type: String,
     },
-    skills: {
-      type: [String],
-      unique: false,
-    },
   },
   { timestamps: true }
 );
 
 const User = mongoose.model("User", userSchema); // creating model with name Usermodel
+//console.log(User.inspect());
 
 module.exports = User;

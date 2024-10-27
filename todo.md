@@ -7,3 +7,4 @@
 - find and findOne
 - diff btwn patch and update
 - schema checks and types
+  -validator
