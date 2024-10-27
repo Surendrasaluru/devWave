@@ -2,12 +2,15 @@ const express = require("express");
 const connectDB = require("./config/database");
 const User = require("./models/user");
 const { validateSignupData } = require("./utils/validation");
-const bcrypt = require("bcrypt");
-const validator = require("validator");
+const bcrypt = require("bcrypt"); //hashing
+const validator = require("validator"); //validtg
+const cookieParser = require("cookie-parser"); //reading cookies
+const jwt = require("jsonwebtoken");
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 //signupapi
 app.post("/signup", async (req, res) => {
@@ -49,6 +52,10 @@ app.post("/login", async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password); //returns true or false
 
     if (isPasswordValid) {
+      const token = await jwt.sign({ _id: user._id }, "surendrad2731");
+      console.log({ token: token });
+
+      res.cookie("token", token); //sending a dummy cookie
       res.send("user loggedin succesfully");
     } else {
       throw new Error("login failed");
@@ -58,6 +65,30 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     res.send("ERROR : " + error.message);
   }
+});
+
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    const { token } = cookies;
+
+    if (!token) {
+      res.send("Invalid token");
+    }
+    const decodedMessage = await jwt.verify(token, "surendrad2731"); //for verfyng
+    const { _id } = decodedMessage;
+    const user = await User.findOne({ _id });
+
+    if (user) {
+      res.send(user);
+    } else {
+      res.send("login first");
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+
+  //console.log(cookies);
 });
 
 //finding a user by mail

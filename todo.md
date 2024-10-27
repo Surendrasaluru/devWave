@@ -7,4 +7,6 @@
 - find and findOne
 - diff btwn patch and update
 - schema checks and types
-  -validator
+- validator
+- deeper understanding of bcrypt
+- deeper understanding of jwt npm
