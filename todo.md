@@ -1,4 +1,4 @@
-#TODO
+=> TODO
 -next in middlewares
 
 - why miiddleswares are used
@@ -9,4 +9,5 @@
 - schema checks and types
 - validator
 - deeper understanding of bcrypt
-- deeper understanding of jwt npm
+- deeper understanding of jwt npm and tokens....
+- express.Router (deep understandign)

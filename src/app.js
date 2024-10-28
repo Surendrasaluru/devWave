@@ -13,81 +13,35 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-//signupapi
-app.post("/signup", async (req, res) => {
+const authRouter = require("./routes/authRouter");
+const profileRouter = require("./routes/profileRouter");
+const requestsRouter = require("./routes/requestsRouter");
+
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestsRouter);
+app.get("/feed", async (req, res) => {
   try {
-    //validating req data before adding it to DB
-    validateSignupData(req);
-
-    const { firstName, lastName, emailId, password } = req.body;
-    const passwordHash = await bcrypt.hash(password, 10);
-    //console.log(passwordHash);
-
-    const user = new User({
-      firstName,
-      lastName,
-      emailId,
-      password: passwordHash,
-    }); // creating new instance of user model
-    await user.save();
-    //console.log("user of dummy added");
-    res.send("dummy used added");
-  } catch (error) {
-    res.send("postfailed" + error.message);
-  }
-
-  // console.log(req.body);
-});
-
-app.post("/login", async (req, res) => {
-  try {
-    const { emailId, password } = req.body; //extracting data from login fields
-    if (!validator.isEmail(emailId)) {
-      throw new Error("Invalid Credetials"); //checking email validity
-    }
-    const user = await User.findOne({ emailId: emailId }); //finding whether user woith given email exists or not
-    if (!user) {
-      throw new Error("u are not a signed user");
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password); //returns true or false(checking paswd)
-
-    if (isPasswordValid) {
-      const token = await user.getJWT();
-
-      res.cookie("token", token); //storing token in cookie
-      res.send("user loggedin succesfully");
-    } else {
-      throw new Error("login failed");
-    }
-
-    //console.log(isPasswordValid);
-  } catch (error) {
-    res.send("ERROR : " + error.message);
-  }
-});
-
-app.get("/profile", userAuth, async (req, res) => {
-  try {
-    const user = req.user;
+    const user = await User.find({}); //empty filter returns everything
     res.send(user);
-  } catch (error) {
-    throw new Error(error.message);
-  }
-
-  //console.log(cookies);
-});
-
-app.post("/sendconnectionrequest", userAuth, async (req, res) => {
-  try {
-    const user = req.user;
-    res.send(user.firstName + "😍 is sending a request to you");
-  } catch (error) {
-    throw new Error(error.message);
+  } catch {
+    res.status(400).send("something went wrong in getting feed");
   }
 });
 
-//finding a user by mail
+connectDB()
+  .then(() => {
+    console.log("established successfully");
+    app.listen(3000, () => {
+      console.log("Server is running on port 3000");
+    });
+  })
+  .catch((err) => {
+    console.error("failed");
+    console.log(err.message);
+  });
+
+/*finding a user by mail
 app.get("/finduser", async (req, res) => {
   const userMail = req.body.emailId; //assigning mail to a varble
   try {
@@ -103,14 +57,6 @@ app.get("/finduser", async (req, res) => {
 });
 
 //feed api
-app.get("/feed", async (req, res) => {
-  try {
-    const user = await User.find({}); //empty filter returns everything
-    res.send(user);
-  } catch {
-    res.status(400).send("something went wrong in getting feed");
-  }
-});
 
 //delete a user api
 app.delete("/deleteuser", async (req, res) => {
@@ -149,16 +95,4 @@ app.patch("/updateuser/:_id", async (req, res) => {
     res.send("something went wrong in updating");
     res.send(err.message);
   }
-});
-
-connectDB()
-  .then(() => {
-    console.log("established successfully");
-    app.listen(3000, () => {
-      console.log("Server is running on port 3000");
-    });
-  })
-  .catch((err) => {
-    console.error("failed");
-    console.log(err.message);
-  });
+});*/
