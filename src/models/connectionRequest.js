@@ -32,7 +32,7 @@ connectionRequestSchema.pre("save", function (next) {
   const connectionRequest = this;
 
   if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
-    throw new Error("you cannot send vonnection request to urself");
+    throw new Error("you cannot send connection request to urself");
   }
   next();
 });
