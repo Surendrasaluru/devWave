@@ -11,3 +11,8 @@
 - deeper understanding of bcrypt
 - deeper understanding of jwt npm and tokens....
 - express.Router (deep understandign)
+- password patch have to do own
+- pre method in mongoose error handling from docs
+- indexes in MDB.
+- why creating lot of indexes in not recommended?
+- $or query in mongoose (operator query logical)
