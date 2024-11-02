@@ -16,3 +16,4 @@
 - indexes in MDB.
 - why creating lot of indexes in not recommended?
 - $or query in mongoose (operator query logical)
+- ref and populate

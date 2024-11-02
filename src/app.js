@@ -16,18 +16,12 @@ app.use(cookieParser());
 const authRouter = require("./routes/authRouter");
 const profileRouter = require("./routes/profileRouter");
 const requestsRouter = require("./routes/requestsRouter");
+const userRouter = require("./routes/userRouter");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestsRouter);
-app.get("/feed", async (req, res) => {
-  try {
-    const user = await User.find({}); //empty filter returns everything
-    res.send(user);
-  } catch {
-    res.status(400).send("something went wrong in getting feed");
-  }
-});
+app.use("/", userRouter);
 
 connectDB()
   .then(() => {
