@@ -9,8 +9,15 @@ const jwt = require("jsonwebtoken");
 const { userAuth } = require("./middlewares/auth");
 
 const app = express();
+const cors = require("cors");
 
 app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 
 const authRouter = require("./routes/authRouter");

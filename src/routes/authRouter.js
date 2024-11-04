@@ -49,7 +49,7 @@ authRouter.post("/login", async (req, res) => {
       const token = await user.getJWT();
 
       res.cookie("token", token); //storing token in cookie
-      res.send("user loggedin succesfully");
+      res.send(user);
     } else {
       throw new Error("login failed");
     }
